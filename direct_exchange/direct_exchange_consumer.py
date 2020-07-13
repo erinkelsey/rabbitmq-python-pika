@@ -4,31 +4,30 @@ import time
 class consume_engine:
     """
     Class to consume messages to RabbitMQ server using pika.
-    Messages are published to a Fanout Exchange, so that they are
-    received by all consumers subscribed to that exchange. Queues are 
-    automatically created when a consumer connects, and automatically 
-    destroyed when they close their connection, therefore only need to 
-    specify exchange, not queue.
 
     :param username: username to login to RabbitMQ server
     :param password: password for user to login to RabbitMQ server
     :param host: location of RabbitMQ server
     :param port: port to connect to RabbitMQ server on host
     :param vhost: virtual host on RabbitMQ server
-    :param exchange_name: exchange name to consume messages from
+    :param exchange_name: exchange name to consume messages from 
+    :param routing_key: routing key 
+    :param message_interval: number of seconds to wait between publishing each message
     """
 
-    def __init__(self, username, password, host, port, vhost, exchange):
+    def __init__(self, username, password, host, port, vhost, exchange, routing_key):
         self._username = username
         self._password = password
         self._host = host
         self._port = port
         self._vhost = vhost
+        self._routing_key = routing_key
         self._exchange_name = exchange
+        self._routing_key = routing_key
         self._queue_name = None
         self._connection = None
         self._channel = None
-
+        
     def make_connection(self):
         """
         Makes a connection to a RabbitMQ server using the credentials and server info 
@@ -54,7 +53,7 @@ class consume_engine:
         """
 
         self._channel.exchange_declare(exchange=self._exchange_name,
-                         exchange_type='fanout')
+                                        exchange_type='direct')
         print("Exchange declared....")
 
     def declare_queue(self):
@@ -69,11 +68,12 @@ class consume_engine:
 
     def make_binding(self):
         """
-        Bind the automatically created queue to the exchange
+        Bind the queue to the exchange with routing key
         """
 
         self._channel.queue_bind(exchange=self._exchange_name,
-                           queue=self._queue_name)
+                                 routing_key=self._routing_key,
+                                 queue=self._queue_name)
         print("Made binding between exchange: %s and queue: %s" %(self._exchange_name, self._queue_name))
 
     def on_message(self, channel, method, properties, body):
@@ -91,7 +91,7 @@ class consume_engine:
 
     def consume_messages(self):
         """
-        Consumes all messages that are sent to the Fanout Exchange on the RabbitMQ server
+        Consumes all messages that are sent to the specific Direct Exchange on the RabbitMQ server
         """
 
         self._channel.basic_consume(self._queue_name, self.on_message,
@@ -101,7 +101,7 @@ class consume_engine:
     def run(self):
         """
         Method to run consumer. Makes connection to RabbitMQ server, creates channel,
-        sets up Fanout Exchange, binds queue and exchange, consumes messages.
+        binds queue and exchange with routing key, consumes messages from queue.
         """
 
         self.make_connection()
@@ -112,5 +112,6 @@ class consume_engine:
         self.consume_messages()
 
 if __name__ == '__main__':
-    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange')
+    # routing keys: scores.curling, scores.hockey, scores.football
+    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', routing_key='scores.hockey')
     engine.run()

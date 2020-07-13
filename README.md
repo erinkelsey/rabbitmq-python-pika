@@ -10,15 +10,22 @@ Blocking Connection:
 
 ## Exchange Types
 Fanout Exchange:
-  - Published messages are broadcasted to all binded (subscribed) queues
-  - For publishing messages to all consumers
+  - Publish/Subscribe pattern -> send messages to all consumers
+  - Queues are automatically created when a consumer connects, and bound to the Fanout Exchange
+  - Published messages are broadcasted to all queues bound to the specific Fanout Exchange
   - Consumers get messages that are published only after they have connected to the RabbitMQ Server
+  - No routing keys
 
 Direct Exchange:
-  - sldkfj
+  - A message goes to the queues whose binding key exactly matches the routing key in the message
+  - Only consumers that connect to that particular queue will receive the message
+  - Can route same message to more than one queue, because queue is explicitly bound with exchange
 
 Topic Exchange:
-  - sldfkj
+  - Similar to Direct Exchange, however compares routing key with binding pattern, instead of binding key
+  - Patterns:
+    \* -> one or more occurrence of word
+    \# -> zero or more occurrence of word
 
 ## Install and Setup RabbitMQ on localhost
 Install on Mac OSX:

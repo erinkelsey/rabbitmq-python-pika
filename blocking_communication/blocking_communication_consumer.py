@@ -3,26 +3,22 @@ import time
 
 class consume_engine:
     """
-    Class to publish asynchronous messages to RabbitMQ server using pika.
+    Class to consume blocking messages to RabbitMQ server using pika.
 
     :param username: username to login to RabbitMQ server
     :param password: password for user to login to RabbitMQ server
     :param host: location of RabbitMQ server
     :param port: port to connect to RabbitMQ server on host
     :param vhost: virtual host on RabbitMQ server
-    :param queue_name: queue name to publish messages to
-    :param number_of_messages: number of messages to publish
-    :param message_interval: number of seconds to wait between publishing each message
+    :param queue_name: queue name to consume messages from
     """
 
-    def __init__(self, username, password, host, port, vhost, queue_name, number_of_messages, message_interval):
+    def __init__(self, username, password, host, port, vhost, queue_name):
         self._username = username
         self._password = password
         self._host = host
         self._port = port
         self._vhost = vhost
-        self._messages = number_of_messages
-        self._message_interval = message_interval
         self._queue_name = queue_name
         self._connection = None
         self._channel = None
@@ -84,12 +80,12 @@ class consume_engine:
         Method to run consumer. Makes connection to RabbitMQ server, creates channel,
         sets up queue, consumes messages.
         """
-        
+
         self.make_connection()
         self.channel()
         self.declare_queue()
         self.consume_messages()
 
 if __name__ == '__main__':
-    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', queue_name='sample_test', number_of_messages=3, message_interval=1)
+    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', queue_name='sample_test')
     engine.run()

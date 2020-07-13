@@ -4,11 +4,8 @@ from random import randint
 class publish_engine:
     """
     Class to publish messages to RabbitMQ server using pika.
-    Messages are published to a Fanout Exchange, so that they are
-    received by all consumers subscribed to that exchange. Queues are 
-    automatically created when a consumer connects, and automatically 
-    destroyed when they close their connection, therefore only need to 
-    specify exchange, not queue.
+    Messages are published to a Direct Exchange, so that they are
+    received by queues that exactly match the routing key in the message. 
 
     :param username: username to login to RabbitMQ server
     :param password: password for user to login to RabbitMQ server
@@ -18,9 +15,12 @@ class publish_engine:
     :param exchange_name: exchange name to publish messages to 
     :param number_of_messages: number of messages to publish
     :param message_interval: number of seconds to wait between publishing each message
+    :param routing_key_curling: routing key
+    :param routing_key_hockey: routing key
+    :param routing_key_football: routing key
     """
 
-    def __init__(self, username, password, host, port, vhost, exchange, number_of_messages, message_interval):
+    def __init__(self, username, password, host, port, vhost, exchange, number_of_messages, message_interval, routing_key_curling, routing_key_hockey, routing_key_football):
         self._username = username
         self._password = password
         self._host = host
@@ -29,6 +29,9 @@ class publish_engine:
         self._messages = number_of_messages
         self._message_interval = message_interval
         self._exchange_name = exchange
+        self._routing_key_curling = routing_key_curling
+        self._routing_key_hockey = routing_key_hockey
+        self._routing_key_football = routing_key_football
         self._connection = None
         self._channel = None
 
@@ -53,31 +56,53 @@ class publish_engine:
 
     def declare_exchange(self):
         """
-        Declares the exchange to publish messages to, with type of 'fanout'.
+        Declares the exchange to publish messages to, with type of 'direct'.
         """
 
         self._channel.exchange_declare(exchange=self._exchange_name,
-                         exchange_type='fanout')
+                         exchange_type='direct')
         print("Exchange declared....")
 
     def publish_message(self):
         """
-        Publishes messages to Fanout Exchange on RabbitMQ Server.
+        Publishes messages to Direct Exchange on RabbitMQ Server.
         """
 
         message_count = 0
         score = 0
+        football_score = 0
+        hockey_score = 0
         while message_count < self._messages:
             message_count += 1
             score += randint(0, 9)
-            message_body = "Curling Score | Home Team : Canada | Away Team : England | Score : %i " %(score)
+            football_score += randint(0, 1)
+            hockey_score += randint(0, 1)
+
+            message_body = "Curling Score | Home Team : Australia | Away Team : England | Score : %i " %(score)
             self._channel.basic_publish(exchange=self._exchange_name,
-                                  routing_key='',
+                                  routing_key=self._routing_key_curling,
                                   body=message_body,
                                   properties=pika.BasicProperties(
-                                      delivery_mode=2,  # make message persistant
+                                      delivery_mode=2,
                                   ))
-            print("Published message %i with score %i" %(message_count, score))
+
+            message_body = "Football Score | New York Vs New England | New York : %i | New England : 0" %(football_score)
+            self._channel.basic_publish(exchange=self._exchange_name,
+                                        routing_key=self._routing_key_football,
+                                        body=message_body,
+                                        properties=pika.BasicProperties(
+                                            delivery_mode=2, 
+                                        ))
+
+            message_body = "Hockey Score | Canada Vs Russia | Canada : %i | Russia : 0" % (hockey_score)
+            self._channel.basic_publish(exchange=self._exchange_name,
+                                        routing_key=self._routing_key_hockey,
+                                        body=message_body,
+                                        properties=pika.BasicProperties(
+                                            delivery_mode=2,
+                                        ))
+
+            print("Published scorecard for curling, football and hockey - %i " %(message_count))
             time.sleep(self._message_interval)
 
     def close_connection(self):
@@ -101,5 +126,5 @@ class publish_engine:
         self.close_connection()
 
 if __name__ == '__main__':
-    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', number_of_messages=25, message_interval=1)
+    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', number_of_messages=25, message_interval=1, routing_key_curling='scores.curling', routing_key_hockey='scores.hockey', routing_key_football='scores.football')
     engine.run()
