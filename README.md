@@ -24,8 +24,8 @@ Direct Exchange:
 Topic Exchange:
   - Similar to Direct Exchange, however compares routing key with binding pattern, instead of binding key
   - Patterns:
-    \* -> one or more occurrence of word
-    \# -> zero or more occurrence of word
+    1. \* -> one or more occurrence of word
+    2. \# -> zero or more occurrence of word
 
 ## Install and Setup RabbitMQ on localhost
 Install on Mac OSX:

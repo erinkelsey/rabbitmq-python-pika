@@ -4,8 +4,9 @@ from random import randint
 class publish_engine:
     """
     Class to publish messages to RabbitMQ server using pika.
-    Messages are published to a Direct Exchange, so that they are
-    received by queues that exactly match the routing key in the message. 
+    Messages are published to a Topic Exchange, so that they are
+    received by queues with binding patterns that match the routing
+    key in the message. 
 
     :param username: username to login to RabbitMQ server
     :param password: password for user to login to RabbitMQ server
@@ -60,12 +61,12 @@ class publish_engine:
         """
 
         self._channel.exchange_declare(exchange=self._exchange_name,
-                         exchange_type='direct')
+                         exchange_type='topic')
         print("Exchange declared....")
 
     def publish_message(self):
         """
-        Publishes messages to Direct Exchange on RabbitMQ Server.
+        Publishes messages to Topic Exchange on RabbitMQ Server.
         """
 
         message_count = 0
@@ -78,7 +79,7 @@ class publish_engine:
             football_score += randint(0, 1)
             hockey_score += randint(0, 1)
 
-            message_body = "Curling Score | Home Team : Australia | Away Team : England | Score : %i " %(score)
+            message_body = "Curling Score | Home Team : Australia | Away Team : England | Score : %i" %(score)
             self._channel.basic_publish(exchange=self._exchange_name,
                                   routing_key=self._routing_key_curling,
                                   body=message_body,
@@ -91,7 +92,7 @@ class publish_engine:
                                         routing_key=self._routing_key_football,
                                         body=message_body,
                                         properties=pika.BasicProperties(
-                                            delivery_mode=2, 
+                                            delivery_mode=2,
                                         ))
 
             message_body = "Hockey Score | Canada Vs Russia | Canada : %i | Russia : 0" % (hockey_score)
@@ -126,5 +127,5 @@ class publish_engine:
         self.close_connection()
 
 if __name__ == '__main__':
-    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', number_of_messages=25, message_interval=1, routing_key_curling='scores.curling', routing_key_hockey='scores.hockey', routing_key_football='scores.football')
+    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.topic', number_of_messages=25, message_interval=1, routing_key_curling='scores.curling', routing_key_hockey='scores.hockey', routing_key_football='scores.football')
     engine.run()

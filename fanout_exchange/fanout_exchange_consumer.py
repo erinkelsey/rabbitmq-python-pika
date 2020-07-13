@@ -112,5 +112,5 @@ class consume_engine:
         self.consume_messages()
 
 if __name__ == '__main__':
-    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange')
+    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.fanout_exchange')
     engine.run()

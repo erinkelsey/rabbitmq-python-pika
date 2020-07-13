@@ -3,7 +3,8 @@ import time
 
 class consume_engine:
     """
-    Class to consume messages to RabbitMQ server using pika.
+    Class to consume messages to RabbitMQ server using pika. Consumes messages
+    with exact binding match.
 
     :param username: username to login to RabbitMQ server
     :param password: password for user to login to RabbitMQ server
@@ -27,7 +28,7 @@ class consume_engine:
         self._queue_name = None
         self._connection = None
         self._channel = None
-        
+
     def make_connection(self):
         """
         Makes a connection to a RabbitMQ server using the credentials and server info 
@@ -49,11 +50,11 @@ class consume_engine:
 
     def declare_exchange(self):
         """
-        Declares the exchange to consume messages from, with type of 'direct'.
+        Declares the exchange to consume messages from, with type of 'topic'.
         """
 
         self._channel.exchange_declare(exchange=self._exchange_name,
-                                        exchange_type='direct')
+                         exchange_type='topic')
         print("Exchange declared....")
 
     def declare_queue(self):
@@ -113,5 +114,5 @@ class consume_engine:
 
 if __name__ == '__main__':
     # routing keys: scores.curling, scores.hockey, scores.football
-    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', routing_key='scores.hockey')
+    engine = consume_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.topic', routing_key='scores.curling')
     engine.run()

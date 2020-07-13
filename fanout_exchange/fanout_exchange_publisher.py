@@ -101,5 +101,5 @@ class publish_engine:
         self.close_connection()
 
 if __name__ == '__main__':
-    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.exchange', number_of_messages=25, message_interval=1)
+    engine = publish_engine(username='guest', password='guest', host='localhost', port=5672, vhost='/', exchange='score.feed.fanout_exchange', number_of_messages=25, message_interval=1)
     engine.run()
