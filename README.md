@@ -1,6 +1,23 @@
 # rabbitmq-python-pika
 Publisher and Consumer implementations for RabbitMQ using Python Pika
 
+## Connection Types
+Asynchronous Connection:
+  - sdf
+
+Blocking Connection:
+  - sdf
+
+## Exchange Types
+Fanout Exchange:
+  - slkfj
+
+Direct Exchange:
+  - sldkfj
+
+Topic Exchange:
+  - sldfkj
+
 ## Install and Setup RabbitMQ on localhost
 Install on Mac OSX:
     
@@ -19,7 +36,21 @@ Start RabbitMQ Management GUI:
     - Username: guest
     - Password: guest
   
-RabbitMQ Config File Location: /usr/local/etc/rabbitmq/rabbitmq.conf
+RabbitMQ Config File:
+    [
+
+        {rabbit,
+            [
+            {tcp_listeners, [{"127.0.0.1", 5672},
+                            {"::1", 5672}]},
+            {num_tcp_acceptors, 100},
+            ]
+        }
+        
+    ].
+
+  - Location: /usr/local/etc/rabbitmq/rabbitmq.conf
+
 
 Start RabbitMQ Server:
 
