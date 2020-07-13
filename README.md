@@ -11,13 +11,14 @@ Export RabbitMQ to PATH:
     $ export PATH=$PATH:/user/local/sbin
     
 Start RabbitMQ Management GUI:
+
+    $ rabbitmq-plugins enable rabbitmq-management
+    
   - URL: http://localhost:15672
   - Default Credentials: 
     - Username: guest
     - Password: guest
   
-    $ rabbitmq-plugins enable rabbitmq-management
-    
 RabbitMQ Config File Location: /usr/local/etc/rabbitmq/rabbitmq.conf
 
 Start RabbitMQ Server:
