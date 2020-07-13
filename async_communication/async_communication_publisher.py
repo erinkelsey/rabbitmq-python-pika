@@ -95,6 +95,7 @@ class publish_engine:
         publisher engine. Pass in the on_open and on_close methods as callbacks to handle connection open 
         and close.
         """
+        
         logging.basicConfig(level=logging.ERROR, format=LOG_FORMAT)
         credentials = pika.PlainCredentials(self._username, self._password)
         parameters = pika.ConnectionParameters(self._host, self._port, self._vhost, credentials, socket_timeout=300)

@@ -3,14 +3,16 @@ Publisher and Consumer implementations for RabbitMQ using Python Pika
 
 ## Connection Types
 Asynchronous Connection:
-  - sdf
+  - Does not require an response from server that message has been received before sending another, or moving on to another task.
 
 Blocking Connection:
-  - sdf
+  - Requires an response from server that message has been received after making every request.
 
 ## Exchange Types
 Fanout Exchange:
-  - slkfj
+  - Published messages are broadcasted to all binded (subscribed) queues
+  - For publishing messages to all consumers
+  - Consumers get messages that are published only after they have connected to the RabbitMQ Server
 
 Direct Exchange:
   - sldkfj
@@ -36,7 +38,7 @@ Start RabbitMQ Management GUI:
     - Username: guest
     - Password: guest
   
-RabbitMQ Config File:
+RabbitMQ Config File: 
     [
 
         {rabbit,
