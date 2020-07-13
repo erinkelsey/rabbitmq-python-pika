@@ -107,7 +107,6 @@ class consume_engine:
         """
         print("Keyboard Interupt recevied !!!")
         if self._channel:
-            # self._channel.basic_cancel(self.on_cancelok, self._consumer_tag)
             self._channel.basic_cancel(consumer_tag=self._consumer_tag, callback=self.on_cancelok)
 
     def on_cancelok(self, unused_frame):
